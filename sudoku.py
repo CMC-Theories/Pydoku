@@ -21,7 +21,7 @@ TESTING_C = (100,150,100)
 
 # Variables - Board
 SIZE_CELL = 30
-SIZE_BOARD = 5
+SIZE_BOARD = 3
 LINE_WIDTH = 1
 MAJOR_WIDTH = 3
 
@@ -309,6 +309,8 @@ while running:
 		if SIZE_BOARD > 3:
 			for i in range(10**(SIZE_BOARD-2)):
 				index_selected = process_auto(index_selected)
+		else:
+			index_selected = process_auto(index_selected)
 		winner = bb.check_success()
 
 	timeout = timeout - 1
