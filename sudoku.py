@@ -130,7 +130,10 @@ LINE_WIDTH = 1
 MAJOR_WIDTH = 3
 size = tuple(SIZE_CELL * SIZE_BOARD*SIZE_BOARD + LINE_WIDTH * (SIZE_BOARD * SIZE_BOARD - 1) for i in range(2))
 screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Mylifefighter's Sudoku")
+pygame.display.set_caption("3x3 Sudoku")
+
+pygame.display.set_icon(pygame.image.load('icon.png'))
+
 
 running = True
 clock = pygame.time.Clock() # Really shouldn't need this, but to prevent going faster than 30 fps
@@ -148,6 +151,10 @@ temp_err_texts_rects = [font_bold.render(i, True, ERR_TEMP_C) for i in TEXTS]
 err_texts_rects = [font_bold.render(i, True, ERR_C) for i in TEXTS]
 texts_sizes = [i.get_rect() for i in texts_rects]
 texts_sizes_bold = [i.get_rect() for i in err_texts_rects]
+
+
+
+
 
 
 index_selected = -1
