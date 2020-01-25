@@ -186,20 +186,53 @@ stack_frame = queue.LifoQueue()
 
 def get_next_free_cell(selected_index):
 	global bb
-	for i in range(selected_index+1,bb.n):
+	for i in range(selected_index+1,bb.n*bb.n):
 		if bb.board[i % bb.n][i // bb.n] == 0:
 			return i
 	return -1
 def process_auto(selected_index):
 	global bb, stack_frame
-	item = None # Pre-define the variable even when assigning it down both routes
-	if not stack_frame.empty():
+	#item = None # Pre-define the variable even when assigning it down both routes
+	#if not stack_frame.empty():
 		# Find first free spot!
-		item = stack_frame.get()
-		selected_index = get_next_free_cell(selected_index)
-	else:
-		item = (-1,-1)
+	#	item = stack_frame.get()
+	#	selected_index = get_next_free_cell(selected_index)
+	#else:
+	#	item = (-1,-1)
+	#	selected_index = get_next_free_cell(-1)
+	if stack_frame.empty():
 		selected_index = get_next_free_cell(-1)
+		item = 0
+	else:
+		items = stack_frame.get()
+		item = items[0] # 
+		time = items[1]
+		selected_index = items[2] 
+		if bb.cur_step > time:
+			bb.rewind(time)
+		# Cool.
+	
+	if item == bb.n:
+		# Failed to assign this space, it must be a PRIOR value. 
+		# Return without replacement.
+		if stack_frame.empty():
+			print("Unsolvable puzzle! Reverting...")
+			bb.rewind(0)
+		return selected_index
+
+	new_time,success = bb.set(selected_index % bb.n, selected_index // bb.n, -(item+1))
+	stack_frame.put([item+1, new_time, selected_index])
+	if success:
+		stack_frame.put([0, new_time, get_next_free_cell(selected_index)])
+		return get_next_free_cell(selected_index)
+	return selected_index
+
+	# Idea:
+	# For the selected space, try a value, and check it.
+	# If it fails, push this spot on the stack with the value
+	# If it succeeds, push this spot and value onto the stack
+	# both return the selected index, if it succeeds then the value stayed
+	# 
 	
 	
 
@@ -252,6 +285,11 @@ while running:
 				elif key == "DOWN":
 					if index_selected < (SIZE_BOARD ** 4) - (SIZE_BOARD ** 2):
 						index_selected = index_selected + SIZE_BOARD**2
+				elif key == "S":
+					# Auto solve it.
+					if not is_running_auto:
+						index_selected = 0
+					is_running_auto = True
 				elif key in TEXTS:
 					# Actually try to put a number into the board (NOTE: REFRESH BOARD!)
 					if bb.board[TX][TY] <= 0:
@@ -261,14 +299,20 @@ while running:
 						else:
 							index_selected = get_next_free_cell(index_selected)
 							winner = bb.check_success()
-					
+	
+	if is_running_auto and not winner:
+		index_selected = process_auto(index_selected)
+		winner = bb.check_success()
+
 	timeout = timeout - 1
 	if timeout == 0:
 		bb.check_state()
 	# __Board Logic__
 	# __Board Rendering__
 	if winner:
-		screen.fill((int(255 * math.sin(delta*2*math.pi / 36.0)), int(255 * math.cos(delta*2*math.pi / 36.0)), 255))
+		special_color = (int(255 * (math.sin(delta*2*math.pi / 36.0)**2)), int(255 * (math.cos(delta*2*math.pi / 36.0)**2)), 255)
+		print(special_color)
+		screen.fill(special_color)
 		delta = delta + 1
 	else:
 		screen.fill(WHITE)
