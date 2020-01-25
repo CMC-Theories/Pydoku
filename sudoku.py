@@ -256,7 +256,6 @@ while running:
 			
 			if index_selected != -1:
 				key = pygame.key.name(e.key).upper()
-				print(key)
 				TX = index_selected % (SIZE_BOARD*SIZE_BOARD)
 				TY = index_selected // (SIZE_BOARD*SIZE_BOARD)
 				if key == "BACKSPACE":
