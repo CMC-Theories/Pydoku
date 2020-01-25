@@ -11,6 +11,21 @@ import queue
 pygame.init() # Init immediately
 pygame.font.init()
 
+# Variables - Colors
+BLACK = (0,0,0)
+WHITE = (255,255,255)
+ERR_C = (255,0,0)
+ERR_TEMP_C = (200,150,100)
+SELECTED_C = (0,50,240)
+TESTING_C = (100,150,100)
+
+# Variables - Board
+SIZE_CELL = 30
+SIZE_BOARD = 5
+LINE_WIDTH = 1
+MAJOR_WIDTH = 3
+
+
 
 class Board:
 	def __init__(self, size = 3):
@@ -117,30 +132,14 @@ class Board:
 						
 		return True
 
-BLACK = (0,0,0)
-WHITE = (255,255,255)
-ERR_C = (255,0,0)
-ERR_TEMP_C = (200,150,100)
-SELECTED_C = (0,50,240)
-TESTING_C = (100,150,100)
 
-SIZE_CELL = 30
-SIZE_BOARD = 3
-LINE_WIDTH = 1
-MAJOR_WIDTH = 3
 size = tuple(SIZE_CELL * SIZE_BOARD*SIZE_BOARD + LINE_WIDTH * (SIZE_BOARD * SIZE_BOARD - 1) for i in range(2))
 screen = pygame.display.set_mode(size)
-pygame.display.set_caption("3x3 Sudoku")
-
+pygame.display.set_caption(str(SIZE_BOARD) + "x" + str(SIZE_BOARD)+" Sudoku")
 pygame.display.set_icon(pygame.image.load('icon.png'))
-
-
 running = True
 clock = pygame.time.Clock() # Really shouldn't need this, but to prevent going faster than 30 fps
-
 bb = Board(size=SIZE_BOARD)
-
-#print(pygame.font.get_fonts())
 TEXTS = [i for i in "0123456789ABCDEFGHIJKLMNOP"]
 TEXTS = TEXTS[:SIZE_BOARD*SIZE_BOARD + 1]
 font = pygame.font.SysFont('arial', 20)
@@ -154,13 +153,10 @@ texts_sizes_bold = [i.get_rect() for i in err_texts_rects]
 
 
 
-
-
-
-index_selected = -1
-
-
-bb.board = [
+if SIZE_BOARD == 2:
+	pass
+elif SIZE_BOARD == 3:
+	bb.board = [
 	[0,0,0,0,7,1,0,6,4],
 	[0,0,0,0,0,0,2,0,7],
 	[8,2,0,0,6,0,0,0,0],
@@ -170,9 +166,19 @@ bb.board = [
 	[0,0,0,0,5,0,0,2,8],
 	[1,0,3,0,0,0,0,0,0],
 	[9,5,0,1,8,0,0,0,0]
-]
+	]
+elif SIZE_BOARD == 4:
+	pass
+elif SIZE_BOARD == 5:
+	bb.board = 	[[0, 0, 12, 6, 0, 0, 7, 0, 18, 0, 5, 24, 0, 10, 1, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0], [2, 0, 19, 0, 13, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 18, 5, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 3, 0, 2, 0, 0, 14, 12, 0, 16, 8, 25, 0, 0], [0, 16, 0, 0, 0, 2, 23, 0, 0, 13, 12, 22, 0, 0, 0, 21, 15, 19, 3, 0, 0, 0, 0, 14, 0], [23, 0, 24, 0, 0, 0, 0, 0, 25, 8, 4, 0, 16, 19, 21, 0, 0, 7, 0, 0, 0, 3, 12, 0, 9], [0, 4, 0, 2, 0, 0, 0, 0, 0, 0, 0, 10, 0, 24, 12, 17, 16, 0, 0, 0, 5, 0, 0, 0, 0], [0, 0, 9, 0, 0, 6, 25, 0, 0, 0, 8, 0, 5, 3, 0, 0, 0, 0, 0, 0, 20, 0, 0, 18, 19], [15, 0, 10, 11, 0, 0, 0, 18, 12, 19, 0, 0, 0, 0, 0, 0, 0, 23, 0, 0, 7, 0, 0, 4, 0], [0, 0, 0, 0, 0, 0, 0, 14, 0, 22, 0, 0, 18, 16, 20, 0, 6, 11, 13, 0, 0, 0, 0, 0, 0], [0, 22, 0, 25, 0, 0, 1, 17, 5, 4, 7, 0, 0, 14, 0, 8, 3, 21, 0, 0, 11, 0, 0, 0, 6], [0, 20, 13, 15, 0, 0, 0, 0, 0, 0, 9, 0, 0, 2, 0, 25, 0, 1, 8, 0, 0, 5, 0, 21, 0], [0, 1, 0, 0, 0, 0, 16, 10, 0, 7, 0, 0, 4, 20, 0, 0, 9, 0, 0, 14, 0, 24, 0, 17, 0], [25, 2, 5, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 19, 1, 8, 0, 0], [0, 0, 7, 21, 0, 0, 12, 0, 2, 17, 0, 0, 0, 18, 6, 16, 0, 0, 15, 0, 0, 13, 0, 10, 0], [8, 10, 18, 12, 16, 9, 0, 0, 0, 5, 0, 0, 0, 0, 19, 0, 0, 17, 0, 21, 0, 15, 0, 0, 22], [0, 8, 0, 0, 15, 0, 3, 0, 6, 0, 21, 0, 0, 7, 0, 18, 14, 5, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 19, 0, 1, 0, 16, 11, 0, 0, 0, 10, 22, 25, 15, 0, 0, 0, 0, 0, 0, 21, 0, 0], [0, 3, 1, 0, 21, 0, 0, 4, 0, 0, 0, 0, 2, 0, 13, 0, 24, 25, 0, 0, 14, 0, 0, 6, 0], [0, 0, 0, 0, 0, 0, 0, 15, 0, 12, 14, 0, 6, 17, 24, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0], [0, 5, 23, 16, 4, 0, 13, 24, 7, 2, 0, 9, 0, 0, 15, 3, 0, 22, 0, 0, 0, 0, 0, 0, 8], [0, 0, 25, 20, 2, 0, 19, 0, 0, 0, 0, 1, 0, 0, 0, 0, 21, 3, 0, 0, 12, 0, 0, 0, 0], [16, 12, 0, 5, 0, 11, 21, 0, 23, 0, 0, 15, 0, 0, 0, 0, 19, 9, 0, 0, 0, 0, 0, 25, 10], [0, 0, 0, 0, 9, 20, 22, 7, 4, 0, 3, 0, 14, 25, 18, 0, 11, 0, 0, 0, 0, 0, 1, 0, 15], [24, 0, 6, 0, 22, 8, 0, 25, 14, 0, 10, 11, 0, 9, 0, 20, 1, 16, 0, 7, 0, 23, 0, 0, 13], [14, 13, 21, 1, 0, 0, 5, 0, 0, 0, 6, 0, 22, 0, 23, 10, 0, 0, 0, 2, 0, 0, 18, 7, 11]]
 bb.transpose()
 
+
+index_selected = -1
+
+"""
+
+"""
 bb.check_state()
 
 timeout = -1
@@ -300,7 +306,9 @@ while running:
 							winner = bb.check_success()
 	
 	if is_running_auto and not winner:
-		index_selected = process_auto(index_selected)
+		if SIZE_BOARD > 3:
+			for i in range(10**(SIZE_BOARD-2)):
+				index_selected = process_auto(index_selected)
 		winner = bb.check_success()
 
 	timeout = timeout - 1
@@ -338,7 +346,13 @@ while running:
 	pygame.display.flip()
 	
 	# __Limit speed of rendering by ensuring a minimum wait time
-	clock.tick(30)
+	if is_running_auto and SIZE_BOARD >= 4:
+		# No tick restriction!
+		pass
+	elif is_running_auto and SIZE_BOARD == 3:
+		clock.tick(60)
+	else:
+		clock.tick(30)
 
 # Finished.
 pygame.quit()
